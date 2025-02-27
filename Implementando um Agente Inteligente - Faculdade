@@ -2,19 +2,24 @@ import random
 import matplotlib.pyplot as plt
 
 class GameAgent:
-    def __init__(self, difficulty="médio"):
+    def __init__(self, difficulty="medio"):
 
         # Definindo os parâmetros de dificuldade
 
-        if difficulty == "fácil":
+        if difficulty == "facil":
             self.max_attempts = 10
             self.secret_number = random.randint(1, 50)
-        elif difficulty == "difícil":
-            self.max_attempts = 3
-            self.secret_number = random.randint(1, 200)
-        else:
+
+        elif difficulty == "medio":
             self.max_attempts = 5
             self.secret_number = random.randint(1, 100)
+
+        elif difficulty == "dificil":
+            self.max_attempts = 3
+            self.secret_number = random.randint(1, 200)
+
+        else:
+            raise ValueError("Dificuldade inválida")  # Adicionando um erro para caso a dificuldade seja inválida.
 
         self.attempts = 0
         self.state = "Esperando tentativa"
@@ -27,12 +32,15 @@ class GameAgent:
         if guess == self.secret_number:
             self.state = "Acertou!"
             return f"Parabéns! Você acertou o número {self.secret_number}."
+
         elif self.attempts >= self.max_attempts:
             self.state = "Fim do jogo"
             return f"Game Over! O número era {self.secret_number}."
+
         elif guess < self.secret_number:
             self.state = "Tentativa errada (muito baixo)"
             return "O número é maior. Tente novamente."
+
         else:
             self.state = "Tentativa errada (muito alto)"
             return "O número é menor. Tente novamente."
@@ -44,10 +52,13 @@ class GameAgent:
         difference = abs(self.secret_number - guess)
         if difference == 0:
             return ""
+
         elif difference <= 5:
             return "Você está muito perto!"
+
         elif difference <= 10:
             return "Você está perto!"
+
         else:
             return "Você está longe, tente de novo!"
 
@@ -67,8 +78,15 @@ class GameAgent:
 # Função para jogar o jogo
 
 def play_game():
-    print("Escolha o nível de dificuldade: fácil, médio, difícil")
-    difficulty = input("Digite a dificuldade: ").lower()
+
+    # Validação para escolher a dificuldade
+
+    while True:
+        difficulty = input("Escolha o nível de dificuldade (facil, medio, dificil): ").lower()
+        if difficulty in ["facil", "medio", "dificil"]:
+            break  # Se a entrada for válida, sai do loop
+        else:
+            print("Dificuldade inválida! Por favor, escolha entre 'facil', 'medio' ou 'dificil'.")
 
     # Criando um agente com a dificuldade escolhida
 
