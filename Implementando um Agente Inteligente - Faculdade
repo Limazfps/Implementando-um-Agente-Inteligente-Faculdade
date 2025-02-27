@@ -1,0 +1,94 @@
+import random
+import matplotlib.pyplot as plt
+
+class GameAgent:
+    def __init__(self, difficulty="médio"):
+
+        # Definindo os parâmetros de dificuldade
+
+        if difficulty == "fácil":
+            self.max_attempts = 10
+            self.secret_number = random.randint(1, 50)
+        elif difficulty == "difícil":
+            self.max_attempts = 3
+            self.secret_number = random.randint(1, 200)
+        else:
+            self.max_attempts = 5
+            self.secret_number = random.randint(1, 100)
+
+        self.attempts = 0
+        self.state = "Esperando tentativa"
+        self.history = []  # Histórico de tentativas
+
+    def make_guess(self, guess):
+        self.attempts += 1
+        self.history.append(guess)
+
+        if guess == self.secret_number:
+            self.state = "Acertou!"
+            return f"Parabéns! Você acertou o número {self.secret_number}."
+        elif self.attempts >= self.max_attempts:
+            self.state = "Fim do jogo"
+            return f"Game Over! O número era {self.secret_number}."
+        elif guess < self.secret_number:
+            self.state = "Tentativa errada (muito baixo)"
+            return "O número é maior. Tente novamente."
+        else:
+            self.state = "Tentativa errada (muito alto)"
+            return "O número é menor. Tente novamente."
+
+    def get_hint(self, guess):
+
+        """Dica com base na proximidade da tentativa do jogador"""
+
+        difference = abs(self.secret_number - guess)
+        if difference == 0:
+            return ""
+        elif difference <= 5:
+            return "Você está muito perto!"
+        elif difference <= 10:
+            return "Você está perto!"
+        else:
+            return "Você está longe, tente de novo!"
+
+    def plot_attempts(self):
+
+        """Função para gerar o gráfico das tentativas"""
+
+        plt.figure(figsize=(8, 5))
+        plt.plot(range(1, len(self.history) + 1), self.history, marker='o', linestyle='-', color='b')
+        plt.axhline(y=self.secret_number, color='r', linestyle='--', label='Número Secreto')
+        plt.xlabel("Tentativas")
+        plt.ylabel("Valor do Palpite")
+        plt.title("Evolução das Tentativas do Jogador")
+        plt.legend()
+        plt.show()
+
+# Função para jogar o jogo
+
+def play_game():
+    print("Escolha o nível de dificuldade: fácil, médio, difícil")
+    difficulty = input("Digite a dificuldade: ").lower()
+
+    # Criando um agente com a dificuldade escolhida
+
+    agent = GameAgent(difficulty=difficulty)
+
+    print(f"\nDificuldade: {difficulty.capitalize()}")
+    print(f"Você tem {agent.max_attempts} tentativas para acertar o número secreto.")
+
+    while agent.state not in ["Acertou!", "Fim do jogo"]:
+        try:
+            guess = int(input("\nDigite um número: "))
+            print(agent.make_guess(guess))
+            print(agent.get_hint(guess))  # Exibindo a dica
+        except ValueError:
+            print("Por favor, insira um número válido.")
+
+    # Após o jogo, exibe o gráfico das tentativas
+
+    agent.plot_attempts()
+
+# Iniciando o jogo
+
+play_game()
